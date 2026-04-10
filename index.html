@@ -5,18 +5,11 @@
   <meta charset="UTF-8">
   <title>Theater Booking MVP</title>
 
-  <!-- Tailwind -->
-
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- Custom CSS -->
-
   <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-    }
+    body { font-family: 'Segoe UI', sans-serif; }
 
-    /* Stage style */
     .stage {
       background: linear-gradient(to right, #d4af37, #f5e6a5);
       color: black;
@@ -25,7 +18,6 @@
       box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     }
 
-    /* Seat base */
     .seat {
       width: 45px;
       height: 45px;
@@ -35,30 +27,11 @@
       transition: all 0.2s ease;
     }
 
-    /* Available */
-    .seat.available {
-      background-color: #8b0000;
-    }
+    .seat.available { background-color: #8b0000; }
+    .seat.available:hover { transform: scale(1.1); background-color: #a00000; }
+    .seat.selected { background-color: gold; color: black; transform: scale(1.1); }
+    .seat.booked { background-color: #444; cursor: not-allowed; }
 
-    .seat.available:hover {
-      transform: scale(1.1);
-      background-color: #a00000;
-    }
-
-    /* Selected */
-    .seat.selected {
-      background-color: gold;
-      color: black;
-      transform: scale(1.1);
-    }
-
-    /* Booked */
-    .seat.booked {
-      background-color: #444;
-      cursor: not-allowed;
-    }
-
-    /* Row label */
     .row-label {
       width: 30px;
       text-align: center;
@@ -70,12 +43,12 @@
 
 <body class="bg-gradient-to-b from-gray-900 to-black text-white min-h-screen flex flex-col items-center p-6">
 
-  <h1 class="text-4xl font-bold mb-6">🎭 Grand Theater Booking</h1>
+  <h1 class="text-4xl font-bold mb-2">🎭 Grand Theater</h1>
+  <h2 id="currentPlay" class="text-lg text-gray-300 mb-6"></h2>
 
   <!-- Login -->
 
   <div id="auth-section" class="bg-white text-black p-6 rounded-xl shadow-xl w-full max-w-sm">
-    <h2 class="text-xl mb-4 text-center">Welcome</h2>
     <input id="email" type="email" placeholder="Email" class="w-full p-2 border rounded mb-3">
     <input id="password" type="password" placeholder="Password" class="w-full p-2 border rounded mb-4">
     <button onclick="mockLogin()" class="w-full bg-red-800 hover:bg-red-900 text-white py-2 rounded">
@@ -88,7 +61,34 @@
   <div id="app" class="hidden w-full max-w-4xl mt-6">
 
 ```
-<!-- Ticket Panel -->
+<!-- Show Info -->
+<div class="bg-white text-black p-4 rounded-xl shadow mb-4">
+  <p><strong>This Week:</strong> Hamlet</p>
+  <p><strong>Next Week:</strong> La Casa de Bernarda Alba</p>
+  <p><strong>In Two Weeks:</strong> Robin Hood</p>
+</div>
+
+<!-- Schedule Selection -->
+<div class="bg-white text-black p-4 rounded-xl shadow mb-4">
+  <h2 class="font-semibold mb-2">📅 Select Day & Time</h2>
+
+  <select id="daySelect" class="w-full p-2 border rounded mb-2">
+    <option value="">Select Day</option>
+    <option value="Thursday">Thursday (Kids FREE)</option>
+    <option value="Friday">Friday</option>
+    <option value="Saturday">Saturday</option>
+  </select>
+
+  <select id="timeSelect" class="w-full p-2 border rounded">
+    <option value="">Select Time</option>
+    <option>5:00 PM</option>
+    <option>7:00 PM</option>
+    <option>9:00 PM</option>
+    <option>11:00 PM</option>
+  </select>
+</div>
+
+<!-- Tickets -->
 <div class="bg-white text-black p-5 rounded-xl shadow-lg mb-6">
   <h2 class="text-lg font-semibold mb-3">🎟 Tickets</h2>
 
@@ -98,7 +98,7 @@
   </div>
 
   <div class="flex justify-between mb-2">
-    <span>Children ($10)</span>
+    <span>Children ($10 / FREE Thursday)</span>
     <input id="childCount" type="number" min="0" value="0" class="w-16 border p-1 rounded">
   </div>
 
@@ -109,15 +109,12 @@
 
 <!-- Stage -->
 <div class="text-center mb-6">
-  <div class="stage py-3 rounded-lg w-2/3 mx-auto">
-    STAGE
-  </div>
+  <div class="stage py-3 rounded-lg w-2/3 mx-auto">STAGE</div>
 </div>
 
 <!-- Seats -->
 <div id="seat-grid" class="space-y-3 mb-6"></div>
 
-<!-- Button -->
 <div class="text-center">
   <button onclick="confirmBooking()" class="bg-green-600 hover:bg-green-700 px-8 py-3 rounded-lg">
     Confirm Booking
@@ -139,7 +136,20 @@
     document.getElementById("auth-section").classList.add("hidden");
     document.getElementById("app").classList.remove("hidden");
 
+    setCurrentPlay();
     renderSeats();
+  }
+
+  // Show rotation logic
+  function setCurrentPlay() {
+    const today = new Date();
+    const week = Math.floor(today.getDate() / 7);
+
+    let play = "Hamlet";
+    if (week === 1) play = "La Casa de Bernarda Alba";
+    if (week >= 2) play = "Robin Hood";
+
+    document.getElementById("currentPlay").innerText = "Now Showing: " + play;
   }
 
   const rows = ["A","B","C","D","E"];
@@ -203,15 +213,25 @@
   function updateTotal() {
     const adults = parseInt(document.getElementById("adultCount").value) || 0;
     const children = parseInt(document.getElementById("childCount").value) || 0;
+    const day = document.getElementById("daySelect").value;
 
-    const total = adults * 20 + children * 10;
+    let childPrice = 10;
+    if (day === "Thursday") childPrice = 0;
+
+    const total = (adults * 20) + (children * childPrice);
     document.getElementById("totalPrice").innerText = total;
   }
 
   document.getElementById("adultCount").addEventListener("input", updateTotal);
   document.getElementById("childCount").addEventListener("input", updateTotal);
+  document.getElementById("daySelect").addEventListener("change", updateTotal);
 
   function confirmBooking() {
+    const day = document.getElementById("daySelect").value;
+    const time = document.getElementById("timeSelect").value;
+
+    if (!day || !time) return alert("Select day and time");
+
     const adults = parseInt(document.getElementById("adultCount").value) || 0;
     const children = parseInt(document.getElementById("childCount").value) || 0;
     const totalTickets = adults + children;
@@ -227,14 +247,15 @@
       seat.bookedBy = currentUser.uid;
     });
 
+    alert(`🎭 Booking confirmed!
+Day: ${day}
+Time: ${time}`);
+
     selectedSeats.clear();
     renderSeats();
-
-    alert("🎭 Booking confirmed!");
   }
 </script>
 
 </body>
 </html>
-
 
