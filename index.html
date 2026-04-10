@@ -20,13 +20,33 @@
 
   <!-- App Section -->
 
-  <div id="app" class="hidden">
-    <h2 class="text-xl mb-4">Select Your Seats</h2>
+  <div id="app" class="hidden w-full max-w-md">
 
 ```
+<!-- Ticket Selection -->
+<div class="bg-white p-4 rounded shadow mb-4">
+  <h2 class="text-lg font-semibold mb-2">🎟 Select Tickets</h2>
+
+  <div class="flex justify-between mb-2">
+    <label>Adults ($20)</label>
+    <input id="adultCount" type="number" min="0" value="0" class="w-16 border p-1 rounded">
+  </div>
+
+  <div class="flex justify-between mb-2">
+    <label>Children (<12) ($10)</label>
+    <input id="childCount" type="number" min="0" value="0" class="w-16 border p-1 rounded">
+  </div>
+
+  <div class="text-right font-bold mt-2">
+    Total: $<span id="totalPrice">0</span>
+  </div>
+</div>
+
+<!-- Seat Grid -->
+<h2 class="text-xl mb-2">Select Your Seats</h2>
 <div id="seat-grid" class="grid grid-cols-5 gap-2 mb-4"></div>
 
-<button onclick="confirmBooking()" class="bg-green-500 text-white px-4 py-2 rounded">
+<button onclick="confirmBooking()" class="bg-green-500 text-white px-4 py-2 rounded w-full">
   Confirm Booking
 </button>
 ```
@@ -34,7 +54,6 @@
   </div>
 
 <script>
-  // MOCK USER
   let currentUser = null;
 
   function mockLogin() {
@@ -42,7 +61,6 @@
     if (!email) return alert("Enter email");
 
     currentUser = { uid: "12345", email };
-    console.log("User logged in:", currentUser);
 
     document.getElementById("auth-section").classList.add("hidden");
     document.getElementById("app").classList.remove("hidden");
@@ -50,7 +68,7 @@
     renderSeats();
   }
 
-  // MOCK SEATS
+  // Seat Data
   const seats = [];
   const selectedSeats = new Set();
 
@@ -89,7 +107,7 @@
           selectedSeats.add(seat.id);
         }
 
-        console.log("Selected seats:", Array.from(selectedSeats));
+        updateTotal();
         renderSeats();
       };
 
@@ -97,9 +115,31 @@
     });
   }
 
+  function updateTotal() {
+    const adults = parseInt(document.getElementById("adultCount").value) || 0;
+    const children = parseInt(document.getElementById("childCount").value) || 0;
+
+    const total = (adults * 20) + (children * 10);
+    document.getElementById("totalPrice").innerText = total;
+
+    console.log("Total price:", total);
+  }
+
+  document.getElementById("adultCount").addEventListener("input", updateTotal);
+  document.getElementById("childCount").addEventListener("input", updateTotal);
+
   function confirmBooking() {
-    if (selectedSeats.size === 0) {
-      alert("Select at least one seat");
+    const adults = parseInt(document.getElementById("adultCount").value) || 0;
+    const children = parseInt(document.getElementById("childCount").value) || 0;
+    const totalTickets = adults + children;
+
+    if (totalTickets === 0) {
+      alert("Select at least one ticket");
+      return;
+    }
+
+    if (selectedSeats.size !== totalTickets) {
+      alert("Number of seats must match number of tickets");
       return;
     }
 
@@ -109,15 +149,18 @@
       seat.bookedBy = currentUser.uid;
     });
 
-    console.log("Booking saved (mock):", seats);
+    console.log("Booking saved (mock):", {
+      seats: Array.from(selectedSeats),
+      adults,
+      children
+    });
 
     selectedSeats.clear();
     renderSeats();
 
-    alert("Seats booked successfully!");
+    alert("Booking successful!");
   }
 </script>
 
 </body>
 </html>
-
