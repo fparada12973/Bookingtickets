@@ -6,49 +6,80 @@
   <title>Theater Booking MVP</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 flex flex-col items-center p-6">
+<body class="bg-gradient-to-br from-gray-900 to-gray-800 text-white min-h-screen flex flex-col items-center p-6">
 
-  <h1 class="text-3xl font-bold mb-6">🎭 Theater Seat Booking</h1>
+  <h1 class="text-4xl font-bold mb-6">🎭 Book Your Seats</h1>
 
-  <!-- Login Section -->
+  <!-- Login Card -->
 
-  <div id="auth-section" class="mb-6">
-    <input id="email" type="email" placeholder="Email" class="p-2 border rounded mb-2 block">
-    <input id="password" type="password" placeholder="Password" class="p-2 border rounded mb-2 block">
-    <button onclick="mockLogin()" class="bg-blue-500 text-white px-4 py-2 rounded">Login</button>
+  <div id="auth-section" class="bg-white text-black p-6 rounded-2xl shadow-xl w-full max-w-sm">
+    <h2 class="text-xl font-semibold mb-4 text-center">Login</h2>
+    <input id="email" type="email" placeholder="Email" class="w-full p-2 border rounded mb-3">
+    <input id="password" type="password" placeholder="Password" class="w-full p-2 border rounded mb-4">
+    <button onclick="mockLogin()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-lg transition">
+      Enter Theater
+    </button>
   </div>
 
-  <!-- App Section -->
+  <!-- App -->
 
-  <div id="app" class="hidden w-full max-w-md">
+  <div id="app" class="hidden w-full max-w-4xl mt-6">
 
 ```
-<!-- Ticket Selection -->
-<div class="bg-white p-4 rounded shadow mb-4">
-  <h2 class="text-lg font-semibold mb-2">🎟 Select Tickets</h2>
+<!-- Top Section -->
+<div class="grid md:grid-cols-2 gap-6">
 
-  <div class="flex justify-between mb-2">
-    <label>Adults ($20)</label>
-    <input id="adultCount" type="number" min="0" value="0" class="w-16 border p-1 rounded">
+  <!-- Ticket Card -->
+  <div class="bg-white text-black p-6 rounded-2xl shadow-xl">
+    <h2 class="text-lg font-semibold mb-4">🎟 Tickets</h2>
+
+    <div class="flex justify-between items-center mb-3">
+      <span>Adults ($20)</span>
+      <input id="adultCount" type="number" min="0" value="0"
+        class="w-20 border p-2 rounded text-center">
+    </div>
+
+    <div class="flex justify-between items-center mb-3">
+      <span>Children ($10)</span>
+      <input id="childCount" type="number" min="0" value="0"
+        class="w-20 border p-2 rounded text-center">
+    </div>
+
+    <div class="border-t pt-3 text-right text-lg font-bold">
+      Total: $<span id="totalPrice">0</span>
+    </div>
   </div>
 
-  <div class="flex justify-between mb-2">
-    <label>Children (<12) ($10)</label>
-    <input id="childCount" type="number" min="0" value="0" class="w-16 border p-1 rounded">
+  <!-- Info Card -->
+  <div class="bg-gray-800 p-6 rounded-2xl shadow-xl">
+    <h2 class="text-lg font-semibold mb-4">ℹ️ Instructions</h2>
+    <ul class="text-sm space-y-2 text-gray-300">
+      <li>• Select number of tickets</li>
+      <li>• Choose matching seats</li>
+      <li>• Red = booked</li>
+      <li>• Yellow = selected</li>
+      <li>• Blue = available</li>
+    </ul>
   </div>
+</div>
 
-  <div class="text-right font-bold mt-2">
-    Total: $<span id="totalPrice">0</span>
+<!-- Screen -->
+<div class="mt-10 mb-4 text-center">
+  <div class="bg-gray-300 text-black py-2 rounded-lg shadow-inner w-1/2 mx-auto">
+    SCREEN
   </div>
 </div>
 
 <!-- Seat Grid -->
-<h2 class="text-xl mb-2">Select Your Seats</h2>
-<div id="seat-grid" class="grid grid-cols-5 gap-2 mb-4"></div>
+<div id="seat-grid" class="grid grid-cols-5 gap-3 justify-center mb-6"></div>
 
-<button onclick="confirmBooking()" class="bg-green-500 text-white px-4 py-2 rounded w-full">
-  Confirm Booking
-</button>
+<!-- Button -->
+<div class="text-center">
+  <button onclick="confirmBooking()"
+    class="bg-green-500 hover:bg-green-600 px-8 py-3 rounded-xl text-lg font-semibold shadow-lg transition">
+    Confirm Booking
+  </button>
+</div>
 ```
 
   </div>
@@ -68,7 +99,6 @@
     renderSeats();
   }
 
-  // Seat Data
   const seats = [];
   const selectedSeats = new Set();
 
@@ -88,15 +118,17 @@
       const btn = document.createElement("button");
       btn.innerText = seat.id;
 
-      let baseClass = "p-4 rounded text-white ";
+      let style = "h-12 rounded-lg font-semibold transition transform ";
 
       if (seat.booked) {
-        btn.className = baseClass + "bg-red-500 cursor-not-allowed";
+        style += "bg-red-500 cursor-not-allowed";
       } else if (selectedSeats.has(seat.id)) {
-        btn.className = baseClass + "bg-yellow-500";
+        style += "bg-yellow-400 text-black scale-105";
       } else {
-        btn.className = baseClass + "bg-blue-500";
+        style += "bg-blue-500 hover:bg-blue-600 hover:scale-105";
       }
+
+      btn.className = style;
 
       btn.onclick = () => {
         if (seat.booked) return;
@@ -121,8 +153,6 @@
 
     const total = (adults * 20) + (children * 10);
     document.getElementById("totalPrice").innerText = total;
-
-    console.log("Total price:", total);
   }
 
   document.getElementById("adultCount").addEventListener("input", updateTotal);
@@ -139,7 +169,7 @@
     }
 
     if (selectedSeats.size !== totalTickets) {
-      alert("Number of seats must match number of tickets");
+      alert("Seats must match tickets");
       return;
     }
 
@@ -149,18 +179,13 @@
       seat.bookedBy = currentUser.uid;
     });
 
-    console.log("Booking saved (mock):", {
-      seats: Array.from(selectedSeats),
-      adults,
-      children
-    });
-
     selectedSeats.clear();
     renderSeats();
 
-    alert("Booking successful!");
+    alert("🎉 Booking successful!");
   }
 </script>
 
 </body>
 </html>
+
