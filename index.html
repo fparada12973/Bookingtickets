@@ -4,19 +4,81 @@
 <head>
   <meta charset="UTF-8">
   <title>Theater Booking MVP</title>
+
+  <!-- Tailwind -->
+
   <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Custom CSS -->
+
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    /* Stage style */
+    .stage {
+      background: linear-gradient(to right, #d4af37, #f5e6a5);
+      color: black;
+      font-weight: bold;
+      letter-spacing: 2px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+
+    /* Seat base */
+    .seat {
+      width: 45px;
+      height: 45px;
+      border-radius: 10px 10px 6px 6px;
+      font-size: 12px;
+      font-weight: bold;
+      transition: all 0.2s ease;
+    }
+
+    /* Available */
+    .seat.available {
+      background-color: #8b0000;
+    }
+
+    .seat.available:hover {
+      transform: scale(1.1);
+      background-color: #a00000;
+    }
+
+    /* Selected */
+    .seat.selected {
+      background-color: gold;
+      color: black;
+      transform: scale(1.1);
+    }
+
+    /* Booked */
+    .seat.booked {
+      background-color: #444;
+      cursor: not-allowed;
+    }
+
+    /* Row label */
+    .row-label {
+      width: 30px;
+      text-align: center;
+      font-weight: bold;
+    }
+  </style>
+
 </head>
-<body class="bg-gradient-to-br from-gray-900 to-gray-800 text-white min-h-screen flex flex-col items-center p-6">
 
-  <h1 class="text-4xl font-bold mb-6">🎭 Book Your Seats</h1>
+<body class="bg-gradient-to-b from-gray-900 to-black text-white min-h-screen flex flex-col items-center p-6">
 
-  <!-- Login Card -->
+  <h1 class="text-4xl font-bold mb-6">🎭 Grand Theater Booking</h1>
 
-  <div id="auth-section" class="bg-white text-black p-6 rounded-2xl shadow-xl w-full max-w-sm">
-    <h2 class="text-xl font-semibold mb-4 text-center">Login</h2>
+  <!-- Login -->
+
+  <div id="auth-section" class="bg-white text-black p-6 rounded-xl shadow-xl w-full max-w-sm">
+    <h2 class="text-xl mb-4 text-center">Welcome</h2>
     <input id="email" type="email" placeholder="Email" class="w-full p-2 border rounded mb-3">
     <input id="password" type="password" placeholder="Password" class="w-full p-2 border rounded mb-4">
-    <button onclick="mockLogin()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-lg transition">
+    <button onclick="mockLogin()" class="w-full bg-red-800 hover:bg-red-900 text-white py-2 rounded">
       Enter Theater
     </button>
   </div>
@@ -26,57 +88,38 @@
   <div id="app" class="hidden w-full max-w-4xl mt-6">
 
 ```
-<!-- Top Section -->
-<div class="grid md:grid-cols-2 gap-6">
+<!-- Ticket Panel -->
+<div class="bg-white text-black p-5 rounded-xl shadow-lg mb-6">
+  <h2 class="text-lg font-semibold mb-3">🎟 Tickets</h2>
 
-  <!-- Ticket Card -->
-  <div class="bg-white text-black p-6 rounded-2xl shadow-xl">
-    <h2 class="text-lg font-semibold mb-4">🎟 Tickets</h2>
-
-    <div class="flex justify-between items-center mb-3">
-      <span>Adults ($20)</span>
-      <input id="adultCount" type="number" min="0" value="0"
-        class="w-20 border p-2 rounded text-center">
-    </div>
-
-    <div class="flex justify-between items-center mb-3">
-      <span>Children ($10)</span>
-      <input id="childCount" type="number" min="0" value="0"
-        class="w-20 border p-2 rounded text-center">
-    </div>
-
-    <div class="border-t pt-3 text-right text-lg font-bold">
-      Total: $<span id="totalPrice">0</span>
-    </div>
+  <div class="flex justify-between mb-2">
+    <span>Adults ($20)</span>
+    <input id="adultCount" type="number" min="0" value="0" class="w-16 border p-1 rounded">
   </div>
 
-  <!-- Info Card -->
-  <div class="bg-gray-800 p-6 rounded-2xl shadow-xl">
-    <h2 class="text-lg font-semibold mb-4">ℹ️ Instructions</h2>
-    <ul class="text-sm space-y-2 text-gray-300">
-      <li>• Select number of tickets</li>
-      <li>• Choose matching seats</li>
-      <li>• Red = booked</li>
-      <li>• Yellow = selected</li>
-      <li>• Blue = available</li>
-    </ul>
+  <div class="flex justify-between mb-2">
+    <span>Children ($10)</span>
+    <input id="childCount" type="number" min="0" value="0" class="w-16 border p-1 rounded">
+  </div>
+
+  <div class="text-right font-bold mt-2">
+    Total: $<span id="totalPrice">0</span>
   </div>
 </div>
 
-<!-- Screen -->
-<div class="mt-10 mb-4 text-center">
-  <div class="bg-gray-300 text-black py-2 rounded-lg shadow-inner w-1/2 mx-auto">
-    SCREEN
+<!-- Stage -->
+<div class="text-center mb-6">
+  <div class="stage py-3 rounded-lg w-2/3 mx-auto">
+    STAGE
   </div>
 </div>
 
-<!-- Seat Grid -->
-<div id="seat-grid" class="grid grid-cols-5 gap-3 justify-center mb-6"></div>
+<!-- Seats -->
+<div id="seat-grid" class="space-y-3 mb-6"></div>
 
 <!-- Button -->
 <div class="text-center">
-  <button onclick="confirmBooking()"
-    class="bg-green-500 hover:bg-green-600 px-8 py-3 rounded-xl text-lg font-semibold shadow-lg transition">
+  <button onclick="confirmBooking()" class="bg-green-600 hover:bg-green-700 px-8 py-3 rounded-lg">
     Confirm Booking
   </button>
 </div>
@@ -99,51 +142,61 @@
     renderSeats();
   }
 
+  const rows = ["A","B","C","D","E"];
+  const seatsPerRow = 5;
+
   const seats = [];
   const selectedSeats = new Set();
 
-  for (let i = 1; i <= 25; i++) {
-    seats.push({
-      id: "S" + i,
-      booked: false,
-      bookedBy: null
-    });
-  }
+  rows.forEach(row => {
+    for (let i = 1; i <= seatsPerRow; i++) {
+      seats.push({
+        id: row + i,
+        booked: false,
+        bookedBy: null
+      });
+    }
+  });
 
   function renderSeats() {
-    const grid = document.getElementById("seat-grid");
-    grid.innerHTML = "";
+    const container = document.getElementById("seat-grid");
+    container.innerHTML = "";
 
-    seats.forEach(seat => {
-      const btn = document.createElement("button");
-      btn.innerText = seat.id;
+    rows.forEach(row => {
+      const rowDiv = document.createElement("div");
+      rowDiv.className = "flex items-center justify-center gap-2";
 
-      let style = "h-12 rounded-lg font-semibold transition transform ";
+      const label = document.createElement("div");
+      label.className = "row-label";
+      label.innerText = row;
 
-      if (seat.booked) {
-        style += "bg-red-500 cursor-not-allowed";
-      } else if (selectedSeats.has(seat.id)) {
-        style += "bg-yellow-400 text-black scale-105";
-      } else {
-        style += "bg-blue-500 hover:bg-blue-600 hover:scale-105";
-      }
+      rowDiv.appendChild(label);
 
-      btn.className = style;
+      seats
+        .filter(s => s.id.startsWith(row))
+        .forEach(seat => {
+          const btn = document.createElement("button");
+          btn.innerText = seat.id;
+          btn.classList.add("seat");
 
-      btn.onclick = () => {
-        if (seat.booked) return;
+          if (seat.booked) btn.classList.add("booked");
+          else if (selectedSeats.has(seat.id)) btn.classList.add("selected");
+          else btn.classList.add("available");
 
-        if (selectedSeats.has(seat.id)) {
-          selectedSeats.delete(seat.id);
-        } else {
-          selectedSeats.add(seat.id);
-        }
+          btn.onclick = () => {
+            if (seat.booked) return;
 
-        updateTotal();
-        renderSeats();
-      };
+            if (selectedSeats.has(seat.id)) selectedSeats.delete(seat.id);
+            else selectedSeats.add(seat.id);
 
-      grid.appendChild(btn);
+            updateTotal();
+            renderSeats();
+          };
+
+          rowDiv.appendChild(btn);
+        });
+
+      container.appendChild(rowDiv);
     });
   }
 
@@ -151,7 +204,7 @@
     const adults = parseInt(document.getElementById("adultCount").value) || 0;
     const children = parseInt(document.getElementById("childCount").value) || 0;
 
-    const total = (adults * 20) + (children * 10);
+    const total = adults * 20 + children * 10;
     document.getElementById("totalPrice").innerText = total;
   }
 
@@ -163,15 +216,10 @@
     const children = parseInt(document.getElementById("childCount").value) || 0;
     const totalTickets = adults + children;
 
-    if (totalTickets === 0) {
-      alert("Select at least one ticket");
-      return;
-    }
+    if (totalTickets === 0) return alert("Select tickets");
 
-    if (selectedSeats.size !== totalTickets) {
-      alert("Seats must match tickets");
-      return;
-    }
+    if (selectedSeats.size !== totalTickets)
+      return alert("Seats must match tickets");
 
     selectedSeats.forEach(id => {
       const seat = seats.find(s => s.id === id);
@@ -182,10 +230,11 @@
     selectedSeats.clear();
     renderSeats();
 
-    alert("🎉 Booking successful!");
+    alert("🎭 Booking confirmed!");
   }
 </script>
 
 </body>
 </html>
+
 
