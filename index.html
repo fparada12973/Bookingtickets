@@ -1,1 +1,123 @@
-jdshjfhsdjkfhdsjkhdfkjhd
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Theater Booking MVP</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex flex-col items-center p-6">
+
+  <h1 class="text-3xl font-bold mb-6">🎭 Theater Seat Booking</h1>
+
+  <!-- Login Section -->
+
+  <div id="auth-section" class="mb-6">
+    <input id="email" type="email" placeholder="Email" class="p-2 border rounded mb-2 block">
+    <input id="password" type="password" placeholder="Password" class="p-2 border rounded mb-2 block">
+    <button onclick="mockLogin()" class="bg-blue-500 text-white px-4 py-2 rounded">Login</button>
+  </div>
+
+  <!-- App Section -->
+
+  <div id="app" class="hidden">
+    <h2 class="text-xl mb-4">Select Your Seats</h2>
+
+```
+<div id="seat-grid" class="grid grid-cols-5 gap-2 mb-4"></div>
+
+<button onclick="confirmBooking()" class="bg-green-500 text-white px-4 py-2 rounded">
+  Confirm Booking
+</button>
+```
+
+  </div>
+
+<script>
+  // MOCK USER
+  let currentUser = null;
+
+  function mockLogin() {
+    const email = document.getElementById("email").value;
+    if (!email) return alert("Enter email");
+
+    currentUser = { uid: "12345", email };
+    console.log("User logged in:", currentUser);
+
+    document.getElementById("auth-section").classList.add("hidden");
+    document.getElementById("app").classList.remove("hidden");
+
+    renderSeats();
+  }
+
+  // MOCK SEATS
+  const seats = [];
+  const selectedSeats = new Set();
+
+  for (let i = 1; i <= 25; i++) {
+    seats.push({
+      id: "S" + i,
+      booked: false,
+      bookedBy: null
+    });
+  }
+
+  function renderSeats() {
+    const grid = document.getElementById("seat-grid");
+    grid.innerHTML = "";
+
+    seats.forEach(seat => {
+      const btn = document.createElement("button");
+      btn.innerText = seat.id;
+
+      let baseClass = "p-4 rounded text-white ";
+
+      if (seat.booked) {
+        btn.className = baseClass + "bg-red-500 cursor-not-allowed";
+      } else if (selectedSeats.has(seat.id)) {
+        btn.className = baseClass + "bg-yellow-500";
+      } else {
+        btn.className = baseClass + "bg-blue-500";
+      }
+
+      btn.onclick = () => {
+        if (seat.booked) return;
+
+        if (selectedSeats.has(seat.id)) {
+          selectedSeats.delete(seat.id);
+        } else {
+          selectedSeats.add(seat.id);
+        }
+
+        console.log("Selected seats:", Array.from(selectedSeats));
+        renderSeats();
+      };
+
+      grid.appendChild(btn);
+    });
+  }
+
+  function confirmBooking() {
+    if (selectedSeats.size === 0) {
+      alert("Select at least one seat");
+      return;
+    }
+
+    selectedSeats.forEach(id => {
+      const seat = seats.find(s => s.id === id);
+      seat.booked = true;
+      seat.bookedBy = currentUser.uid;
+    });
+
+    console.log("Booking saved (mock):", seats);
+
+    selectedSeats.clear();
+    renderSeats();
+
+    alert("Seats booked successfully!");
+  }
+</script>
+
+</body>
+</html>
+
